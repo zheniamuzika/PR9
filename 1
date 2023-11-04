@@ -1,0 +1,40 @@
+
+import numpy as np
+from scipy.interpolate import lagrange
+import matplotlib.pyplot as plt
+
+
+x_values = np.array([0.8, 0.9, 1.2, 1.6, 2.1])
+y_values = np.array([1.42, 2.34, 3.48, 1.77, 2.66])
+
+scale = 0
+degree = 3
+x_lagrange = x_values - scale
+poly = lagrange(x_lagrange, y_values)
+taylor_poly = np.polyder(poly, m=degree)
+derivatives = []
+for i in range(degree + 1):
+    derivatives.append(np.polyval(np.polyder(taylor_poly, m=i), scale))
+
+x_interp = np.linspace(x_values[0], x_values[-1], num=100)
+taylor_approximation = np.polyval(taylor_poly, x_interp)
+error = np.abs(np.sin(2 * x_interp) + x_interp - taylor_approximation)
+
+for i, c in enumerate(derivatives):
+    print(f"Похідна {i}: {c}")
+
+print(f"Середня похибка: {np.mean(error):.6f}")
+
+plt.plot(x_values, y_values, 'o', label='Функція')
+plt.plot(x_interp, np.sin(2 * x_interp) + x_interp, label='Аналітична функція')
+plt.plot(x_interp, taylor_approximation, label='Многочлен Тейлора')
+plt.legend()
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('Многочлен Тейлора та функція')
+plt.show()
+plt.plot(x_interp, error)
+plt.xlabel('x')
+plt.ylabel('Похибка')
+plt.title('Графік похибки')
+plt.show()
